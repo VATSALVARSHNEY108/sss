@@ -1,0 +1,9 @@
+@keyframes floatPhoto {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Apply to the image container */
+.team-photo {
+  animation: floatPhoto 4s ease-in-out infinite;
+}

@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "C:/Users/VATSAL VARSHNEY/AppData/Local/Temp/sb-next-build/types/**/*.ts",
+    ".next-local/types/**/*.ts",
+    ".next-build/types/**/*.ts",
+    "C:\\Users\\VATSAL~1\\AppData\\Local\\Temp\\sb-next-build/types/**/*.ts",
+    "../sb-next-cache/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
