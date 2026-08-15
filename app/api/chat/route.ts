@@ -68,7 +68,11 @@ export async function POST(request: Request) {
   const backendUrl = process.env.CHAT_BACKEND_URL;
   if (backendUrl && backendUrl !== 'http://localhost:8000/chat') {
     try {
-      const response = await fetch(backendUrl, {
+      let targetUrl = backendUrl.trim();
+      if (!targetUrl.endsWith('/chat')) {
+        targetUrl = targetUrl.replace(/\/$/, '') + '/chat';
+      }
+      const response = await fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
