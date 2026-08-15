@@ -7,11 +7,12 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # Copy requirements and install dependencies
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the backend files
-COPY . .
+# Copy the backend source files
+COPY backend/main.py .
+COPY backend/.env.example .
 
 # Set default port and run Uvicorn
 ENV PORT=8000
