@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 
 const GROQ_CHAT_URL = process.env.GROQ_CHAT_URL || 'https://api.groq.com/openai/v1/chat/completions';
 const DEFAULT_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
@@ -27,29 +25,6 @@ Response Guidelines:
 - When asked about SkillYug, state what it is clearly. When asked who created or founded SkillYug, credit Vinayak Pandey (Founder & Chief AI Architect). When asked who developed or engineered Whobee / SkillYug, credit Vatsal Varshney (Lead Software & AI Engineer).
 - Direct users to https://docs.google.com/forms/d/e/1FAIpQLSfEQ2YLNjB5N9exUh16Izbw3D8PrzXMps1JiA8-OTgodks3uA/viewform?pli=1 or consultantskillyug@gmail.com for consultations, quotes, and project discussions.`;
 
-function getGroqApiKey(): string | null {
-  let key = process.env.GROQ_API_KEY?.trim();
-  if (key && key !== 'your_groq_api_key_here') return key;
-
-  try {
-    const envPath = path.join(process.cwd(), 'backend', '.env');
-    if (fs.existsSync(envPath)) {
-      const content = fs.readFileSync(envPath, 'utf8');
-      for (const line of content.split(/\r?\n/)) {
-        const trimmed = line.trim();
-        if (trimmed.startsWith('GROQ_API_KEY=')) {
-          const val = trimmed.slice('GROQ_API_KEY='.length).trim().replace(/^["']|["']$/g, '');
-          if (val && val !== 'your_groq_api_key_here') return val;
-        }
-      }
-    }
-  } catch {
-    // Ignore read errors
-  }
-
-  return null;
-}
-
 export async function POST(request: Request) {
   let body: any;
 
@@ -64,31 +39,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ detail: 'messages must be a non-empty array.' }, { status: 400 });
   }
 
-  // 1. If custom external CHAT_BACKEND_URL is configured (and not local default), attempt proxying
-  const backendUrl = process.env.CHAT_BACKEND_URL;
-  if (backendUrl && backendUrl !== 'http://localhost:8000/chat') {
-    try {
-      let targetUrl = backendUrl.trim();
-      if (!targetUrl.endsWith('/chat')) {
-        targetUrl = targetUrl.replace(/\/$/, '') + '/chat';
-      }
-      const response = await fetch(targetUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const data = await response.json();
-      return NextResponse.json(data, { status: response.status });
-    } catch {
-      // Fall back to direct Groq connection
-    }
-  }
-
-  // 2. Direct Groq API Integration
-  const apiKey = getGroqApiKey();
-  if (!apiKey) {
+  const apiKey = process.env.GROQ_API_KEY?.trim() || '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';
+  if (!apiKey || apiKey === 'your_groq_api_key_here') {
     return NextResponse.json(
-      { detail: 'Groq API key is missing or invalid. Set GROQ_API_KEY in .env.' },
+      { detail: 'Groq API key is missing or invalid. Set GROQ_API_KEY in environment variables.' },
       { status: 503 }
     );
   }
@@ -101,7 +55,7 @@ export async function POST(request: Request) {
     .filter((m: any) => m.content);
 
   const payload = {
-    model: process.env.GROQ_MODEL || DEFAULT_MODEL,
+    model: DEFAULT_MODEL,
     temperature: 0.4,
     max_tokens: 350,
     messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...normalizedMessages],
